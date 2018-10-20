@@ -19,7 +19,8 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
     describe('before pre-ico', async function () {
         it('should not accept payments', async function () {
             try {
-                await web3.eth.sendTransaction({to: ico.address, from: recipient, value: pricePreICO });
+                //await web3.eth.sendTransaction({to: ico.address, from: recipient, value: pricePreICO });
+                await ico.buyTokens(recipient, {value: pricePreICO });
             } catch (error) {
                 const revertFound = error.message.search('revert') >= 0;
                 assert(revertFound, `Expected "revert", got ${error} instead`);
@@ -37,7 +38,8 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
         describe('before adding to whitelist', async function () {
             it('should not accept payments', async function () {
                 try {
-                    await web3.eth.sendTransaction({to: ico.address, from: recipient, value: pricePreICO});
+                    // await web3.eth.sendTransaction({to: ico.address, from: recipient, value: pricePreICO});
+                    await ico.buyTokens(recipient, {value: pricePreICO });
                 } catch (error) {
                     const revertFound = error.message.search('revert') >= 0;
                     assert(revertFound, `Expected "revert", got ${error} instead`);
@@ -55,7 +57,8 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
 
             it('should accept payments', async function () {
                 let watcher = token.Transfer();
-                web3.eth.sendTransaction({to: ico.address, from: recipient, value: pricePreICO, gas: 1000000 });
+                // web3.eth.sendTransaction({to: ico.address, from: recipient, value: pricePreICO, gas: 1000000 });
+                await ico.buyTokens(recipient, {value: pricePreICO, gas: 1000000 });
                 let logs = await Promisify(cb => watcher.get(cb));
 
                 assert.equal(logs.length, 1);
@@ -84,12 +87,13 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
         });
 
         it('should be open', async function () {
-            assert.equal(await ico.hasClosed(), false);
+            assert.equal(await ico.isOpen(), true);
         });
 
         it('should accept payments', async function () {
             let watcher = token.Transfer();
-            web3.eth.sendTransaction({to: ico.address, from: recipient, value: priceICO, gas: 1000000 });
+            // web3.eth.sendTransaction({to: ico.address, from: recipient, value: priceICO, gas: 1000000 });
+            await ico.buyTokens(recipient, {value: priceICO, gas: 1000000 });
             let logs = await Promisify(cb => watcher.get(cb));
 
             assert.equal(logs.length, 1);
@@ -116,12 +120,13 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
         });
 
         it('should be closed', async function () {
-            assert.equal(await ico.hasClosed(), true);
+            assert.equal(await ico.isOpen(), false);
         });
 
         it('should not accept payments', async function () {
             try {
-                await web3.eth.sendTransaction({to: ico.address, from: recipient, value: priceICO });
+                // await web3.eth.sendTransaction({to: ico.address, from: recipient, value: priceICO });
+                await ico.buyTokens(recipient, {value: priceICO});
             } catch (error) {
                 const revertFound = error.message.search('revert') >= 0;
                 assert(revertFound, `Expected "revert", got ${error} instead`);
@@ -151,4 +156,4 @@ const Promisify = (inner) =>
 // DEMO_ICO.(fallback) [value = 5 ether]
 // DEMOToken.balanceOf(beneficary) == 2
 // DEMO_ICO.finalizeIco();
-// DEMO_ICO.hasClosed() == true;
+// DEMO_ICO.isOpen() == false;

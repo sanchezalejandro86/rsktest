@@ -15,23 +15,21 @@
 var HDWalletProvider = require('truffle-hdwallet-provider');
 
 var mnemonic = 'almost task argue silver make assault number olympic shield destroy dawn aspect';
-var node = 'https://public-node.testnet.rsk.co:443';
 
 module.exports = {
   networks: {
     rsk: {
       gas : 2500000,
-      gasPrice: 0,
-      from : "0x919086d45f87174A4bc92723b6eB1F725B4213BA",
+      gasPrice: 183000,
+      //from : "0x919086d45f87174a4bc92723b6eb1f725b4213ba",
       host: "localhost",
       port: 4444,
       network_id: "*" // Match any network id
     },
-    rsk: {
+    rsktest: {
       gas : 2500000,
       gasPrice: 183000,
-      provider: () =>
-          new HDWalletProvider(mnemonic, node),
+      provider: () => new HDWalletProvider(mnemonic, "https://public-node.testnet.rsk.co:443"),
       network_id: "*" // Match any network id
     }
   }
