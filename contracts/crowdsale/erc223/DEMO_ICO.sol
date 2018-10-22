@@ -47,8 +47,8 @@ contract DEMO_ICO is WhitelistedCrowdsale{
         currentStage = Stages.icoEnd;
     }
 
-    function hasClosed() public view returns (bool){
-        return currentStage == Stages.icoEnd;
+    function isOpen() public view returns (bool){
+        return currentStage == Stages.preICO || currentStage == Stages.icoStart;
     }
 
     function _preValidatePurchase(
@@ -57,7 +57,7 @@ contract DEMO_ICO is WhitelistedCrowdsale{
     )
     internal
     {
-        require(!hasClosed(), "The ICO is closed");
+        require(isOpen(), "The ICO is not open");
         super._preValidatePurchase(_beneficiary, _weiAmount);
     }
 

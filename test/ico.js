@@ -20,6 +20,7 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
         it('should not accept payments', async function () {
             try {
                 await web3.eth.sendTransaction({to: ico.address, from: recipient, value: pricePreICO });
+
             } catch (error) {
                 const revertFound = error.message.search('revert') >= 0;
                 assert(revertFound, `Expected "revert", got ${error} instead`);
@@ -84,7 +85,7 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
         });
 
         it('should be open', async function () {
-            assert.equal(await ico.hasClosed(), false);
+            assert.equal(await ico.isOpen(), true);
         });
 
         it('should accept payments', async function () {
@@ -116,7 +117,7 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
         });
 
         it('should be closed', async function () {
-            assert.equal(await ico.hasClosed(), true);
+            assert.equal(await ico.isOpen(), false);
         });
 
         it('should not accept payments', async function () {
@@ -151,4 +152,4 @@ const Promisify = (inner) =>
 // DEMO_ICO.(fallback) [value = 5 ether]
 // DEMOToken.balanceOf(beneficary) == 2
 // DEMO_ICO.finalizeIco();
-// DEMO_ICO.hasClosed() == true;
+// DEMO_ICO.isOpen() == false;
