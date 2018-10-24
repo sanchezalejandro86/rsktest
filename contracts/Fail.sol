@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.24;
 
 contract Fail {
 
@@ -6,9 +6,9 @@ contract Fail {
         require(false);
     }
 
-    function error() public pure returns (bool){
+    function error() public pure returns (string){
         require(false);
-        return true;
+        return 'It did not fail';
     }
 
 }

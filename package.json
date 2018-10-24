@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "truffle": "^4.1.14",
+    "truffle": "5.0.0-next.12",
     "truffle-hdwallet-provider": "^0.0.6",
     "zeppelin-solidity": "^1.12.0"
   },
