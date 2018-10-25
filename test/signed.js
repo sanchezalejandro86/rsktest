@@ -1,15 +1,10 @@
 const Demotoken = artifacts.require("DEMOToken");
-const Feeless = artifacts.require('Feeless')
 
 contract('SIGNED', async ([_, owner, recipient, wallet]) => {
-    let token, feeless;
+    let token;
     const totalSupply = 100;
     const ownerPrivateKey = 'ae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f';
     let ownerBalance, recipientBalance, walletBalance;
-
-    before(async () => {
-        feeless = await Feeless.new();
-    });
 
     beforeEach(async () => {
         token = await Demotoken.new('DEMO Token', 'DEMO', 18, totalSupply, {from: owner});
@@ -27,7 +22,7 @@ contract('SIGNED', async ([_, owner, recipient, wallet]) => {
             assert.equal(ownerTokens, totalSupply);
             assert.equal(recipientTokens, 0);
 
-            await token.transfer(recipient, 1, {from: owner});
+            await token.transferPreSigned(recipient, 1, {from: owner});
 
             ownerTokens = await token.balanceOf(owner);
             recipientTokens = await token.balanceOf(recipient);
@@ -47,13 +42,13 @@ contract('SIGNED', async ([_, owner, recipient, wallet]) => {
             assert.equal(ownerTokens, totalSupply);
             assert.equal(recipientTokens, 0);
 
-            //sign
-            const nonce = await feeless.nonces(owner);
-            const data = token.contract.methods.transfer(recipient, 1).encodeABI();
-            const hash = web3.utils.sha3(token.address + data + web3.utils.padLeft(nonce.toString(16), 64), { encoding: 'hex' });
+            const nonce = await token.nonces(owner);
+            const data = token.contract.methods.transferPreSigned(recipient, 1).encodeABI();
+            const hash = web3.utils.soliditySha3(token.address, data, nonce);
+
             const sig = await web3.eth.sign(hash, owner);
 
-            await feeless.performFeelessTransaction(owner, token.address, data, nonce, sig, {from: wallet});
+            await token.performFeelessTransaction(owner, token.address, data, nonce, sig, {from: wallet, gas: 1000000});
 
             ownerTokens = await token.balanceOf(owner);
             recipientTokens = await token.balanceOf(recipient);

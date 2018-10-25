@@ -2,7 +2,7 @@ const { expectThrow } = require('./helpers/expectThrow');
 
 const Fail = artifacts.require("Fail");
 
-contract('FALLBACK', async ([_, owner, recipient, wallet]) => {
+contract('FAIL', async ([_, owner, recipient, wallet]) => {
     let fail;
     let pricePreICO = web3.utils.toWei('1', 'ether');
 
@@ -12,22 +12,14 @@ contract('FALLBACK', async ([_, owner, recipient, wallet]) => {
 
     describe('simple fail fallback', async function(){
        it('should fail', async function(){
-           try {
-               await web3.eth.sendTransaction({to: fail.address, from: recipient, value: pricePreICO });
-           } catch (error) {
-               const revertFound = error.message.search('revert') >= 0;
-               assert(revertFound, `Expected "revert", got ${error} instead`);
-               return;
-           }
-           assert.fail('Expected revert not received');
+           await expectThrow(web3.eth.sendTransaction({to: fail.address, from: recipient, value: pricePreICO }), 'revert');
        });
     });
 
 
     describe('simple fail function', async function(){
-        it('should fail', async function(){
-            expectThrow(fail.error());
-            assert.fail('Expected revert not received');
-        });
+       it('should fail', async function(){
+           await expectThrow(fail.error(), 'revert');
+       });
     });
 });

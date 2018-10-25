@@ -1,5 +1,3 @@
-'use strict'
-
 const { expectThrow } = require('./helpers/expectThrow');
 
 const Feeless = artifacts.require('FeelessImpl');
@@ -30,7 +28,7 @@ contract('Feeless', function ([_, wallet1, wallet2, wallet3, wallet4, wallet5, w
         {
             const nonce = await feeless.nonces(wallet1);
             const data = feeless.contract.methods.setValue(400).encodeABI();
-            const hash = web3.utils.sha3(feeless.address + data + web3.utils.padLeft(nonce.toString(16), 64), { encoding: 'hex' });
+            const hash = web3.utils.soliditySha3(feeless.address, data, nonce);
             const sig = await web3.eth.sign(hash, wallet1);
 
             await feeless.performFeelessTransaction(wallet1, feeless.address, data, nonce, sig);
@@ -42,7 +40,7 @@ contract('Feeless', function ([_, wallet1, wallet2, wallet3, wallet4, wallet5, w
         {
             const nonce = await feeless.nonces(wallet2);
             const data = feeless.contract.methods.setValue(500).encodeABI();
-            const hash = web3.utils.sha3(feeless.address + data + web3.utils.padLeft(nonce.toString(16), 64), { encoding: 'hex' });
+            const hash = web3.utils.soliditySha3(feeless.address, data, nonce);
             const sig = await web3.eth.sign(hash, wallet2);
 
             await feeless.performFeelessTransaction(wallet2, feeless.address, data, nonce, sig);
@@ -59,7 +57,7 @@ contract('Feeless', function ([_, wallet1, wallet2, wallet3, wallet4, wallet5, w
         const sig = await web3.eth.sign(hash, wallet1);
 
         const wrongData = feeless.contract.methods.setValue(1001).encodeABI();
-        expectThrow(feeless.performFeelessTransaction(wallet1, feeless.address, wrongData, nonce, sig));
+        await expectThrow(feeless.performFeelessTransaction(wallet1, feeless.address, wrongData, nonce, sig), 'revert');
     });
 
     it('should failure with wrong nonce', async function() {
@@ -69,7 +67,7 @@ contract('Feeless', function ([_, wallet1, wallet2, wallet3, wallet4, wallet5, w
         const sig = await web3.eth.sign(hash, wallet1);
 
         const wrongNonce = nonce + 1;
-        expectThrow(feeless.performFeelessTransaction(wallet1, feeless.address, data, wrongNonce, sig));
+        await expectThrow(feeless.performFeelessTransaction(wallet1, feeless.address, data, wrongNonce, sig), 'revert');
     });
 
     it('should failure with wrong signature', async function() {
@@ -79,7 +77,7 @@ contract('Feeless', function ([_, wallet1, wallet2, wallet3, wallet4, wallet5, w
         const sig = await web3.eth.sign(hash, wallet1);
 
         const wrongSig = '0xdeadbeef' + sig.substr(10);
-        expectThrow(feeless.performFeelessTransaction(wallet1, feeless.address, data, nonce, wrongSig));
+        await expectThrow(feeless.performFeelessTransaction(wallet1, feeless.address, data, nonce, wrongSig), 'revert');
     });
 
 })
