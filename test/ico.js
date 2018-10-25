@@ -56,7 +56,7 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
             });
 
             it('wallet should received funds', async function () {
-                assert.equal(await web3.eth.getBalance(wallet), Number(walletBalance) + Number(pricePreICO));
+                assert.equal(Number(await web3.eth.getBalance(wallet)), Number(walletBalance) + Number(pricePreICO));
             });
         });
     });
@@ -90,7 +90,7 @@ contract('DEMO_ICO', async ([_, owner, recipient, wallet]) => {
         });
 
         it('wallet should received funds', async function () {
-            assert.equal(await web3.eth.getBalance(wallet), Number(walletBalance) + Number(pricePreICO) + Number(priceICO));
+            assert.equal(Number(await web3.eth.getBalance(wallet)), Number(walletBalance) + Number(pricePreICO) + Number(priceICO));
         });
     });
 
