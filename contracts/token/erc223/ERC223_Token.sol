@@ -109,7 +109,7 @@ contract ERC223Token is ERC223, ERC20 {
         return transferToContract(msg.sender, _to, _value, _data);
     }
 
-    function transferToAddress(address _from, address _to, uint _value, bytes _data) private returns (bool success) {
+    function transferToAddress(address _from, address _to, uint _value, bytes _data) internal returns (bool success) {
         if (balanceOf(_from) < _value) revert();
         balances[_from] = balanceOf(_from).sub(_value);
         balances[_to] = balanceOf(_to).add(_value);

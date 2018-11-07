@@ -4,7 +4,7 @@ const { assertRevert } = require('./helpers/assertRevert');
 contract('DEMOToken', async ([_, owner, recipient, anotherAccount]) => {
     const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
     let token;
-    let priceWei = web3.toWei(0.1, 'ether');
+    let priceWei = web3.utils.toWei('0.1', 'ether');
 
     beforeEach(async () => {
         token = await Demotoken.new('DEMO Token', 'DEMO', 18, 100, {from: owner});
@@ -66,7 +66,7 @@ contract('DEMOToken', async ([_, owner, recipient, anotherAccount]) => {
                     assert.equal(logs[0].event, 'Transfer');
                     assert.equal(logs[0].args.from, owner);
                     assert.equal(logs[0].args.to, to);
-                    assert(logs[0].args.value.eq(amount));
+                    assert.equal(logs[0].args.value, amount);
                 });
             });
         });
@@ -94,7 +94,7 @@ contract('DEMOToken', async ([_, owner, recipient, anotherAccount]) => {
                     assert.equal(logs[0].event, 'Approval');
                     assert.equal(logs[0].args.owner, owner);
                     assert.equal(logs[0].args.spender, spender);
-                    assert(logs[0].args.value.eq(amount));
+                    assert.equal(logs[0].args.value, amount);
                 });
 
                 describe('when there was no approved amount before', function () {
@@ -130,7 +130,7 @@ contract('DEMOToken', async ([_, owner, recipient, anotherAccount]) => {
                     assert.equal(logs[0].event, 'Approval');
                     assert.equal(logs[0].args.owner, owner);
                     assert.equal(logs[0].args.spender, spender);
-                    assert(logs[0].args.value.eq(amount));
+                    assert.equal(logs[0].args.value, amount);
                 });
 
                 describe('when there was no approved amount before', function () {
@@ -175,7 +175,7 @@ contract('DEMOToken', async ([_, owner, recipient, anotherAccount]) => {
                 assert.equal(logs[0].event, 'Approval');
                 assert.equal(logs[0].args.owner, owner);
                 assert.equal(logs[0].args.spender, spender);
-                assert(logs[0].args.value.eq(amount));
+                assert.equal(logs[0].args.value, amount);
             });
         });
     });
@@ -208,7 +208,7 @@ contract('DEMOToken', async ([_, owner, recipient, anotherAccount]) => {
                         await token.transferFrom(owner, to, amount, { from: spender });
 
                         const allowance = await token.allowance(owner, spender);
-                        assert(allowance.eq(0));
+                        assert.equal(allowance, 0);
                     });
 
                     it('emits a transfer event', async function () {
@@ -218,7 +218,7 @@ contract('DEMOToken', async ([_, owner, recipient, anotherAccount]) => {
                         assert.equal(logs[0].event, 'Transfer');
                         assert.equal(logs[0].args.from, owner);
                         assert.equal(logs[0].args.to, to);
-                        assert(logs[0].args.value.eq(amount));
+                        assert.equal(logs[0].args.value, amount);
                     });
                 });
 

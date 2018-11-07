@@ -57,7 +57,7 @@ contract DEMO_ICO is WhitelistedCrowdsale{
     )
     internal
     {
-        require(!isOpen(), "The ICO is closed");
+        require(isOpen(), "The ICO is not open");
         super._preValidatePurchase(_beneficiary, _weiAmount);
     }
 
